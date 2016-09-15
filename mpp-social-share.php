@@ -2,7 +2,7 @@
 /**
  * Plugin Name: MediaPress Social Share
  * Plugin URI: http://buddydev.com/plugins/mpp-social-share/
- * Description: MediaPress add-on for displaying social media icons to share Post/Page and media 
+ * Description: MediaPress add-on for displaying social media icons to share Post/Page and media
  * Version: 1.0.0
  * Author: BuddyDev Team
  * Author URI: http://buddydev.com
@@ -41,10 +41,14 @@ class MPP_Social_Share_Helper {
 	}
 
 	private function setup() {
+
+		if ( ! function_exists( 'mediapress' ) ) {
+			return;
+		}
 		//load core
-		add_action( 'plugins_loaded', array( $this, 'load' ) );
+		add_action( 'mpp_loaded', array( $this, 'load' ) );
 		//load js/css
-		add_action( 'wp_enqueue_scripts', array( $this,'load_assets' ) );
+		add_action( 'mpp_enqueue_scripts', array( $this,'load_assets' ) );
 		//inject config js in footer
 		add_action( 'wp_footer', array( $this, 'attach_footer_scripts' ) );
 		//inject scripts in lightbox
