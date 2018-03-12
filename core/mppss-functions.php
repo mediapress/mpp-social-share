@@ -5,64 +5,18 @@
  *
  * @return mixed|array
  */
-function mpp_ss_get_options() {
-	return get_option('mpp-ss-settings', array());
+function mppss_get_settings() {
+	return get_option( 'mppss-settings', array() );
 }
 
 /**
+ * Get array of services small buttons
+ *
+ * @param $id
  *
  * @return array
  */
-function mpp_ss_get_services_js_arr() {
-
-	static $loaded;
-
-	$fb = '';
-
-	if ( ! isset ( $loaded ) ) {
-		$fb 	= "<div id='fb-root'></div>";
-		$loaded = true;
-	}
-
-	$service_js_arr = array(
-
-		'facebook'      => $fb .
-		                   '<script>(function(d, s, id) {
-								var js, fjs = d.getElementsByTagName(s)[0];
-								if (d.getElementById(id)) return;
-								js = d.createElement(s); js.id = id;
-								js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
-								fjs.parentNode.insertBefore(js, fjs);
-							}(document, "script", "facebook-jssdk"));						
-							</script>',
-		'twitter'       => '<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?"http":"https";if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document, "script", "twitter-wjs");</script>',
-		'googleplus'    => '<script type="text/javascript">
-							(function() {
-								var po = document.createElement("script"); po.type = "text/javascript"; po.async = true;
-								po.src = "https://apis.google.com/js/platform.js";
-								var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(po, s);
-							})();
-							</script>',
-		'digg'          => '',
-		'reddit'        => '',
-		'linkedin'      => '<script src="//platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>',
-		'stumbleupon'	=> '<script type="text/javascript">
-								(function() {
-							    	var li = document.createElement("script"); li.type = "text/javascript"; li.async = true;
-									li.src = ("https:" == document.location.protocol ? "https:" : "http:") + "//platform.stumbleupon.com/1/widgets.js";
-									var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(li, s);
-								})();
-					  		</script>',
-		'tumblr'        => '',
-		'pinterest'     => ''
-	);
-	return $service_js_arr;
-}
-
-/**
- * @return array
- */
-function mpp_ss_get_small_buttons_markup_arr( $id = null ) {
+function mppss_get_small_buttons( $id = null ) {
 
 	if ( ! $id ) {
 		return ;
@@ -103,12 +57,16 @@ function mpp_ss_get_small_buttons_markup_arr( $id = null ) {
 }
 
 /**
- * @return array of social share buttons without count
+ * Get array of services without count
+ *
+ * @param $id
+ *
+ * @return array
  */
-function mpp_ss_get_buttons_without_count_markup_arr( $id = null ) {
+function mppss_get_buttons_without_count( $id = null ) {
 
 	if ( ! $id ) {
-		return ;
+		return;
 	}
 
 	$post  = get_post( $id );
@@ -132,11 +90,14 @@ function mpp_ss_get_buttons_without_count_markup_arr( $id = null ) {
 	return $service_markup_arr;
 }
 
-
 /**
- * @return array of social share button with count
+ * Get array of services with count
+ *
+ * @param $id
+ *
+ * @return array
  */
-function mpp_ss_get_buttons_with_count_markup_arr( $id ) {
+function mppss_get_buttons_with_count( $id ) {
 
 	if ( ! $id ) {
 		return ;
@@ -172,83 +133,34 @@ function mpp_ss_get_buttons_with_count_markup_arr( $id ) {
 	return $service_markup_arr;
 }
 
-
 /**
+ * Get MarkUp
+ *
+ * @param int $id Media or Gallery id.
+ *
  * @return string
  */
-function mpp_ss_get_html_markup( $id = null ) {
+function mppss_get_html_markup( $id = null ) {
 
-	$settings = mpp_ss_get_options();
+	$settings = mppss_get_settings();
 	$class    = isset ( $settings['select-style'] ) ? $settings['select-style'] : '';
 
 	if ( $settings['select-style'] == 'horizontal-with-count' ) {
-		$service_markup_arr = mpp_ss_get_buttons_with_count_markup_arr( $id );
+		$service_markup_arr = mppss_get_buttons_with_count( $id );
 	} elseif ( $settings['select-style'] == 'small-buttons' ) {
-		$service_markup_arr = mpp_ss_get_small_buttons_markup_arr( $id );
+		$service_markup_arr = mppss_get_small_buttons( $id );
 	} else {
-		$class .= ' s-share-w-c'; //sspace is given to have space between classes when element will create
-		$service_markup_arr = mpp_ss_get_buttons_without_count_markup_arr( $id );
+		$class              .= ' s-share-w-c'; //sspace is given to have space between classes when element will create
+		$service_markup_arr = mppss_get_buttons_without_count( $id );
 	}
 
 	$html_markup = '';
 
 	foreach ( $service_markup_arr as $key => $value ) {
-
-		if ( in_array( $key, (array) $settings['selected-services'] )  ) {
+		if ( in_array( $key, (array) $settings['selected-services'] ) ) {
 			$html_markup .= $value;
 		}
 	}
 
-	return '<div id="s-share-buttons" class="'.$class.'">'.$html_markup.'</div>';
-
-}
-
-function mpp_ss_show_social_link() {
-
-	$show_on = mpp_ss_get_show_on_options();
-	$show = false;
-
-	if ( mpp_is_single_media() ) {
-        $show = in_array( 'media_single', $show_on ) ? true : false;
-    } elseif ( mpp_is_single_gallery()  ) {
-        $show = in_array( 'gallery_single', $show_on ) ? true : false;
-    } elseif ( mpp_is_user_gallery_component() || mpp_is_gallery_directory() || mpp_is_group_gallery_component() ) {
-        $show = in_array( 'gallery_list', $show_on ) ? true : false;
-    }
-    
-	return apply_filters( 'mpp_ss_share_social_link', $show );
-
-}
-
-function mpp_ss_get_show_on_options() {
-
-	$settings = mpp_ss_get_options();
-	$show_on  = ( array ) $settings['show-on'];
-	return $show_on;
-}
-
-function mpp_ss_get_excluded() {
-
-	$settings = mpp_ss_get_options();
-	$excluded = explode( ',', $settings['exclude-on'] );
-	return $excluded;
-}
-
-function mpp_ss_get_position() {
-
-	$settings = mpp_ss_get_options();
-	$position = (array) $settings['select-position'];
-	return $position;
-}
-
-function mpp_ss_lightbox_media_show_share_link( $show ) {
-
-	$show = true;
-	return $show;
-}
-
-function mpp_ss_lightbox_gallery_show_share_link( $show ) {
-
-	$show = true;
-	return $show;
+	return '<div id="s-share-buttons" class="' . $class . '">' . $html_markup . '</div>';
 }

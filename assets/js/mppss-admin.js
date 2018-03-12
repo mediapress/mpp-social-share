@@ -10,7 +10,7 @@ function hide_show_tr_select_animation(){
 
 jQuery(document).ready(function(){
 
-	hide_show_tr_select_animation();
+	// hide_show_tr_select_animation();
 	jQuery('input:radio[name="mpp-ss-settings[ss-select-style]"]').change(function(){
 	    hide_show_tr_select_animation();
     });
