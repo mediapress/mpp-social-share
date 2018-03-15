@@ -41,18 +41,23 @@ class MPPSS_Hooks_Helper {
 	 */
 	public function is_enabled() {
 
-		$is_enabled          = false;
+	    $is_enabled          = false;
 		$settings            = mppss_get_settings();
 		$settings['show-on'] = ( $settings ) ? $settings['show-on'] : array();
 
-		if ( mpp_is_single_media() && in_array( 'media_single', $settings['show-on'] ) ) {
-			$is_enabled = true;
-		} elseif ( mpp_is_single_gallery() && in_array( 'gallery_single ', $settings['show-on'] ) ) {
-			$is_enabled = true;
-		} elseif ( mpp_is_user_gallery_component() || mpp_is_gallery_directory() || mpp_is_group_gallery_component() ) {
-			if ( in_array( 'gallery_list', $settings['show-on'] ) ) {
+
+		if ( mpp_is_single_media() ) {
+			$is_enabled = in_array( 'media_single', $settings['show-on'] ) ? true : false;
+			return $is_enabled;
+		} elseif ( mpp_is_single_gallery() ) {
+			$is_enabled = in_array( 'gallery_single', $settings['show-on'] ) ? true : false;
+			return $is_enabled;
+		} elseif ( in_array( 'gallery_list', $settings['show-on'] ) ) {
+			if ( mpp_is_user_gallery_component() || mpp_is_group_gallery_component() || mpp_is_gallery_directory() ) {
 				$is_enabled = true;
 			}
+
+			return $is_enabled;
 		}
 
 		return $is_enabled;
@@ -62,6 +67,9 @@ class MPPSS_Hooks_Helper {
 	 * If is enable on lightbox
 	 *
 	 * @return bool
+     *
+     *
+     *
 	 */
 	public function is_lightbox_enabled() {
 
@@ -88,7 +96,8 @@ class MPPSS_Hooks_Helper {
 		}
 
 		$media = mpp_get_media( $media );
-		echo mppss_get_html_markup( $media->id );
+
+		echo mppss_get_html_markup( $media->id, 'media' );
 	}
 
 	/**
@@ -103,7 +112,8 @@ class MPPSS_Hooks_Helper {
 		}
 
 		$media = mpp_get_media( $media );
-		echo mppss_get_html_markup( $media->id );
+
+		echo mppss_get_html_markup( $media->id, 'media' );
 	}
 
 	/**
@@ -118,17 +128,18 @@ class MPPSS_Hooks_Helper {
 		}
 
 		$gallery = mpp_get_gallery( $gallery );
-		echo mppss_get_html_markup( $gallery->id );
+
+		echo mppss_get_html_markup( $gallery->id, 'gallery' );
 	}
 
 	/**
 	 * Inject necessary og meta details
      *
-     * @todo need to improve
+     * @todo need to improve.
 	 */
 	public function inject_og_meta() {
 
-		if ( ! $this->is_enabled() || ! $this->is_lightbox_enabled() ) {
+		if ( ! ( mpp_is_single_media() || mpp_is_single_gallery() ) ) {
 			return;
 		}
 
@@ -152,6 +163,7 @@ class MPPSS_Hooks_Helper {
 			$image       = mpp_get_gallery_cover_src( 'thumbnail', $gallery );
 		}
 
+		$size = mpp_get_option( 'size_thumbnail' );
 		?>
 
         <meta property="og:title" content="<?php echo esc_attr( $title ); ?>"/>
@@ -163,8 +175,8 @@ class MPPSS_Hooks_Helper {
 
 		<?php if ( $image ) : ?>
             <meta property="og:image" content="<?php echo esc_url( $image ); ?>"/>
-            <meta property="og:image:width" content="<?php echo mpp_get_option( 'size_thumbnail' ); ?>">
-            <meta property="og:image:height" content="<?php echo mpp_get_option( 'size_thumbnail' ); ?>">
+            <meta property="og:image:width" content="<?php echo esc_attr( $size['width'] ); ?>">
+            <meta property="og:image:height" content="<?php echo esc_attr( $size['height'] ); ?>">
 		<?php endif; ?>
 
 		<?php

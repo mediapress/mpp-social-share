@@ -87,7 +87,7 @@ class MPP_Social_Share {
 		add_action( 'mpp_enqueue_scripts', array( $this, 'load_assets' ) );
 		add_action( 'mpp_after_lightbox_media', array( $this, 'after_lightbox_scripts' ) );
 
-		add_action( 'wp_footer', array( $this, 'attach_footer_scripts' ) );
+		// add_action( 'wp_footer', array( $this, 'attach_footer_scripts' ) );
 	}
 
 	/**
@@ -133,9 +133,11 @@ class MPP_Social_Share {
 		wp_register_script( 'googleplus-sdk-js', $this->url . 'assets/js/google-plus-sdk.js', array( 'jquery' ), false, true );
 		wp_register_script( 'twitter-sdk-js', $this->url . 'assets/js/twitter-sdk.js', array( 'jquery' ), false, true );
 		wp_register_script( 'linkdin-sdk-js', 'https://platform.linkedin.com/in.js', array( 'jquery' ), false, true );
+		wp_register_script( 'pinterest-sdk-js', 'https://assets.pinterest.com/js/pinit.js', array( 'jquery' ), false, true );
 		wp_register_script( 'stumbleupon-sdk-js', $this->url . 'assets/js/stumbleupon-sdk.js', array( 'jquery' ), false, true );
 
-		if ( ! empty( $settings['selected-services'] ) && ( $settings['select-style'] == 'horizontal-with-count' || $settings['select-style'] == 'small-buttons' ) ) {
+		if ( ! empty( $settings['selected-services'] ) &&
+		     ( in_array( $settings['select-style'], array( 'horizontal-with-count', 'small-buttons' ) ) ) ) {
 			foreach ( $settings['selected-services'] as $service ) {
 				wp_enqueue_script( $service . '-sdk-js' );
 			}
@@ -162,8 +164,34 @@ class MPP_Social_Share {
 	 * Add script after loading lightbox
 	 */
 	public function after_lightbox_scripts() {
-		$this->load_assets();
-		echo '<script type="text/javascript">FB.XFBML.parse();IN.parse();twttr.widgets.load();</script>';
+
+		$settings = mppss_get_settings();
+
+		if ( ! in_array( 'light_box', $settings['show-on'] ) || ! in_array( $settings['select-style'], array( 'horizontal-with-count', 'small-buttons' ) ) ) {
+			return;
+		}
+
+		$script = '';
+
+		if ( 'facebook' == $settings['selected-services'] ) {
+			$script .= 'FB.XFBML.parse();';
+		}
+
+		if ( 'linkedin' == $settings['selected-services'] ) {
+			$script .= 'IN.parse();';
+		}
+
+		if ( 'twitter' == $settings['selected-services'] ) {
+			$script .= 'twttr.widgets.load();';
+		}
+
+		$script = trim( $script );
+
+		if ( empty( $script ) ) {
+			return;
+		}
+
+		echo '<script type="text/javascript">' . $script . '</script>';
 	}
 
 	/**
