@@ -154,29 +154,29 @@ class MPPSS_Hooks_Helper {
 			$title       = mpp_get_media_title( $media );
 			$url         = mpp_get_media_permalink( $media );
 			$description = mpp_get_media_description( $media );
-			$image       = mpp_get_media_cover_src( 'thumbnail', $media );
+			$image       = mpp_get_media_cover_src( 'original', $media );
 		} elseif ( mpp_is_single_gallery() ) {
 			$gallery     = mpp_get_current_gallery();
 			$title       = mpp_get_gallery_title( $gallery );
 			$url         = mpp_get_gallery_permalink( $gallery );
 			$description = mpp_get_gallery_description( $gallery );
-			$image       = mpp_get_gallery_cover_src( 'thumbnail', $gallery );
+			$image       = mpp_get_gallery_cover_src( 'original', $gallery );
 		}
 
-		$size = mpp_get_option( 'size_thumbnail' );
+		list( $width, $height ) = getimagesize( $image );
 		?>
 
         <meta property="og:title" content="<?php echo esc_attr( $title ); ?>"/>
         <meta property="og:description" content="<?php echo $description; ?>"/>
 
-		<?php if ( $url ): ?>
-            <meta property="og:url" content="<?php echo esc_url( $url ); ?>"/>
+        <?php if ( $image ) : ?>
+            <meta property="og:image" content="<?php echo esc_url( $image ); ?>"/>
+            <meta property="og:image:width" content="<?php echo esc_attr( $width ); ?>">
+            <meta property="og:image:height" content="<?php echo esc_attr( $height ); ?>">
 		<?php endif; ?>
 
-		<?php if ( $image ) : ?>
-            <meta property="og:image" content="<?php echo esc_url( $image ); ?>"/>
-            <meta property="og:image:width" content="<?php echo esc_attr( $size['width'] ); ?>">
-            <meta property="og:image:height" content="<?php echo esc_attr( $size['height'] ); ?>">
+		<?php if ( $url ): ?>
+            <meta property="og:url" content="<?php echo esc_url( $url ); ?>"/>
 		<?php endif; ?>
 
 		<?php

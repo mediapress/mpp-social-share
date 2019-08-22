@@ -83,7 +83,7 @@ function mppss_get_buttons_without_count( $id = null, $context = '' ) {
 	}
 
 	$service_markup_arr = array(
-		'facebook' 		=> '<a href="http://www.facebook.com/sharer.php?u=' . $url . '" target="_blank" title="Share to Facebook" class="s3-facebook hint--top"></a>',
+		'facebook' 		=> '<a href="http://www.facebook.com/sharer.php?display=page&u=' . $url . '" target="_blank" title="Share to Facebook" class="s3-facebook hint--top"></a>',
 		'twitter' 		=> '<a href="http://twitter.com/intent/tweet?text=' . $title . '&url=' . $url .'" target="_blank"  title="Share to Twitter" class="s3-twitter hint--top"></a>',
 		'googleplus' 	=> '<a href="https://plus.google.com/share?url=' . $url . '" target="_blank"  title="Share to Google Plus" class="s3-google-plus hint--top"></a>',
 		'digg' 			=> '<a href="http://www.digg.com/submit?url=' . $url . '" target="_blank"  title="Share to Digg" class="s3-digg hint--top"></a>',
